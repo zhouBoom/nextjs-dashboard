@@ -2,8 +2,13 @@ import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
+const sql = postgres(process.env.POSTGRES_URL!, {
+  ssl: 'require',
+  connect_timeout: 30, // 增加到30秒
+  idle_timeout: 30,
+  max_lifetime: 60 * 30 // 30分钟
+});
+console.log(sql);
 async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await sql`
@@ -103,6 +108,9 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
+    console.log('Attempting to connect to database...');
+    await sql`SELECT 1`;
+    console.log('Database connection successful');
     const result = await sql.begin((sql) => [
       seedUsers(),
       seedCustomers(),
