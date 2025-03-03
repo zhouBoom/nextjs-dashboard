@@ -68,15 +68,12 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
   ];
 };
 
-// ... existing code ...
-
 // Debounce function: Delays invoking a function until after wait milliseconds have elapsed since the last time it was called
 export const debounce = (fn: Function, delay: number) => {
   let timer: NodeJS.Timeout | null = null;
-  
-  return function (...args: any[]) {
+  return function (this: any, ...args: any[]) {
     if (timer) clearTimeout(timer);
-    
+
     timer = setTimeout(() => {
       fn.apply(this, args);
     }, delay);
